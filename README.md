@@ -22,40 +22,35 @@ Generate detailed HTML reports automatically
 
 All steps are orchestrated using Apache Airflow DAGs and executed inside Docker containers.
 
-🧱 Architecture
-                ┌────────────┐
-                │ MeetingBank│
-                │   Dataset  │
-                └─────┬──────┘
-                      │
-                ┌─────▼──────┐
-                │  Extract   │
-                └─────┬──────┘
-                      │
-                ┌─────▼──────┐
-                │   Clean    │
-                └─────┬──────┘
-                      │
-                ┌─────▼──────┐
-                │ Transform  │
-                └─────┬──────┘
-          ┌───────────┴───────────┐
-          │                       │
-┌─────────▼─────────┐   ┌─────────▼─────────┐
-│   PostgreSQL DB    │   │   MongoDB DB       │
-│ (Structured Data) │   │ (Unstructured Data)│
-└─────────┬─────────┘   └─────────┬─────────┘
-          │                       │
-          └───────────┬───────────┘
-                      ▼
-               ┌────────────┐
-               │ Analytics  │
-               └─────┬──────┘
-                     ▼
-            ┌──────────────────┐
-            │ HTML Report Auto │
-            │   Generation     │
-            └──────────────────┘
+🧱 Architecture & Workflow
+
+The ETL pipeline follows a modular and scalable architecture orchestrated using Apache Airflow.
+
+### Workflow Overview
+
+1. **Extract**
+   - Fetch raw meeting transcripts from the MeetingBank dataset
+
+2. **Clean**
+   - Remove null values
+   - Normalize text
+   - Validate schema
+
+3. **Transform**
+   - Convert raw data into structured and unstructured formats
+   - Generate relational-ready and NoSQL-ready datasets
+
+4. **Load**
+   - Load structured data into **PostgreSQL**
+   - Load unstructured data into **MongoDB**
+
+5. **Analytics**
+   - Compute descriptive statistics
+   - Generate insights from meeting data
+
+6. **Reporting**
+   - Automatically generate detailed **HTML reports** after each DAG run
+
 
 🛠️ Tech Stack
 Component	Technology
@@ -66,37 +61,50 @@ Relational Database	PostgreSQL
 NoSQL Database	MongoDB
 Analytics	Pandas, Python
 Reporting	HTML (auto-generated)
-📁 Project Structure
-meetingbank_pipeline/
-│
-├── dags/
-│   └── meetingbank_etl_pipeline.py   # Airflow DAG
-│
-├── scripts/
-│   ├── extract.py
-│   ├── clean.py
-│   ├── transform.py
-│   ├── load.py
-│   ├── analytics.py
-│   └── config.py
-│
-├── sql/
-│   ├── create_tables.sql
-│   ├── create_indexes.sql
-│   └── sample_queries.sql
-│
-├── Reports/
-│   ├── meetingbank_report_YYYY-MM-DD.html
-│   └── meetingbank_detailed_report_YYYY-MM-DD.html
-│
-├── tests/
-│   └── unit tests for ETL stages
-│
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── .gitignore
-└── README.md
+## 📁 Project Structure
+
+The project is organized in a modular and scalable manner, following data engineering best practices.
+
+### Core Components
+
+- **dags/**
+  - `meetingbank_etl_pipeline.py`  
+    Airflow DAG that orchestrates the complete ETL workflow
+
+- **scripts/**
+  - `extract.py` – Data extraction logic
+  - `clean.py` – Data cleaning and validation
+  - `transform.py` – Data transformation logic
+  - `load.py` – Load data into PostgreSQL and MongoDB
+  - `analytics.py` – Analytics and metrics computation
+  - `config.py` – Centralized configuration
+
+- **sql/**
+  - `create_tables.sql` – PostgreSQL schema creation
+  - `create_indexes.sql` – Index optimization
+  - `sample_queries.sql` – Example analytical queries
+
+- **Reports/**
+  - `meetingbank_report_YYYY-MM-DD.html` – Summary HTML report
+  - `meetingbank_detailed_report_YYYY-MM-DD.html` – Detailed analytics report
+
+- **tests/**
+  - Unit tests for individual ETL stages
+
+- **Dockerfile**
+  - Docker image definition for Airflow environment
+
+- **docker-compose.yml**
+  - Multi-container orchestration (Airflow, PostgreSQL, MongoDB)
+
+- **requirements.txt**
+  - Python dependencies
+
+- **.gitignore**
+  - Ignored files and directories
+
+- **README.md**
+  - Project documentation
 
 ⚙️ How to Run the Project
 1️⃣ Prerequisites
